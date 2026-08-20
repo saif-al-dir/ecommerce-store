@@ -22,6 +22,10 @@ mongoose.connect(process.env.MONGO_URI)
 // Routes (We will add these next)
 app.get('/', (req, res) => res.send('E-commerce API is running...'));
 
+// Routes
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/products', require('./routes/productRoutes'));
+
 // Serve frontend in production (Express v5 catch-all fix included)
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'client/build')));
