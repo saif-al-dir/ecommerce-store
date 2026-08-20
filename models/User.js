@@ -16,13 +16,13 @@ const userSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Pre-save hook to hash the password automatically!
-userSchema.pre('save', async function(next) {
+// Mongoose 8 fix: No 'next' parameter when using async/await!
+userSchema.pre('save', async function() {
   // Only hash the password if it has been modified
-  if (!this.isModified('password')) return next();
+  if (!this.isModified('password')) return;
   
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-  next();
 });
 
 // Helper method to compare passwords during login
