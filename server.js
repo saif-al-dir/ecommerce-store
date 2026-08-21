@@ -1,3 +1,4 @@
+const { webcrypto } = require('node:crypto'); globalThis.crypto = webcrypto;
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
@@ -18,9 +19,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected successfully'))
   .catch(err => console.error('MongoDB connection error:', err));
-
-// Routes (We will add these next)
-app.get('/', (req, res) => res.send('E-commerce API is running...'));
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));

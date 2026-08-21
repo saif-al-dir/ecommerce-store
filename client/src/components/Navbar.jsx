@@ -38,6 +38,10 @@ const NavigationBar = () => {
 
             {user ? (
               <>
+
+                <Nav.Link as={Link} to="/admin/create-product" className="text-light">
+                  Create Product
+                </Nav.Link>
                 <span className="navbar-text text-warning me-3">
                   Hello, {user.name}!
                 </span>
