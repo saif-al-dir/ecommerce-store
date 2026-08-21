@@ -95,7 +95,7 @@ const HomeScreen = () => {
                   View Details
                 </Button>
                 {/* Admin CRUD Buttons */}
-                {user && (
+                {user?.isAdmin && (
                   <div className="d-flex gap-2">
                     <Button as={Link} to={`/admin/product/${product._id}/edit`} variant="warning" className="w-100">
                       Edit

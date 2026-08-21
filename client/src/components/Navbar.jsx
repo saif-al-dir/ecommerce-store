@@ -36,15 +36,17 @@ const NavigationBar = () => {
               )}
             </Nav.Link>
 
-            {user ? (
+            {user?.isAdmin && (
               <>
 
                 <Nav.Link as={Link} to="/admin/create-product" className="text-light">
                   Create Product
                 </Nav.Link>
-                <span className="navbar-text text-warning me-3">
-                  Hello, {user.name}!
-                </span>
+                
+                  <Nav.Link as={Link} to="/profile" className="text-warning me-3">
+                    Hello, {user.name}!
+                  </Nav.Link>
+                
                 <Button variant="outline-danger" onClick={handleLogout}>
                   Logout
                 </Button>

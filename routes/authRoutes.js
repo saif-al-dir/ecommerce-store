@@ -2,6 +2,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { protect } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 // Register a new user
@@ -54,6 +55,35 @@ router.post('/login', async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: 'Server error during login' });
+  }
+});
+
+// UPDATE User Profile (Protected)
+router.put('/profile', protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+      user.name = req.body.name || user.name;
+      user.email = req.body.email || user.email;
+      if (req.body.password) {
+        user.password = req.body.password; // Mongoose pre-save hook will hash this!
+      }
+
+      const updatedUser = await user.save();
+      
+      // Generate a new token to send back
+      const token = jwt.sign({ id: updatedUser._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+      res.json({
+        token,
+        user: { id: updatedUser._id, name: updatedUser.name, email: updatedUser.email, isAdmin: updatedUser.isAdmin }
+      });
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update profile' });
   }
 });
 

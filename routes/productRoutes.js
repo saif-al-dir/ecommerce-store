@@ -1,7 +1,7 @@
 // routes/productRoutes.js
 const express = require('express');
 const Product = require('../models/Product');
-const { protect } = require('../middleware/authMiddleware');
+const { protect, admin } = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');
 const router = express.Router();
 
@@ -30,7 +30,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST create a product (Protected + Upload Image)
-router.post('/', protect, upload.single('image'), async (req, res) => {
+router.post('/', protect, admin, upload.single('image'), async (req, res) => {
   try {
     const { name, description, price, brand, category, countInStock } = req.body;
     
@@ -57,7 +57,7 @@ router.post('/', protect, upload.single('image'), async (req, res) => {
 });
 
 // UPDATE a product (Protected + Upload Image)
-router.put('/:id', protect, upload.single('image'), async (req, res) => {
+router.put('/:id', protect, admin, upload.single('image'), async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ error: 'Product not found' });
@@ -82,8 +82,42 @@ router.put('/:id', protect, upload.single('image'), async (req, res) => {
   }
 });
 
+// POST a review for a product (Protected)
+router.post('/:id/reviews', protect, async (req, res) => {
+  try {
+    const { rating, comment } = req.body;
+    const product = await Product.findById(req.params.id);
+
+    if (product) {
+      // Check if user already reviewed this product
+      const alreadyReviewed = product.reviews.find(
+        (r) => r.user.toString() === req.user._id.toString()
+      );
+
+      if (alreadyReviewed) {
+        return res.status(400).json({ error: 'You have already reviewed this product' });
+      }
+
+      const review = {
+        user: req.user._id,
+        name: req.user.name,
+        rating: Number(rating),
+        comment
+      };
+
+      product.reviews.push(review);
+      await product.save();
+      res.status(201).json({ message: 'Review added successfully' });
+    } else {
+      res.status(404).json({ error: 'Product not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to add review' });
+  }
+});
+
 // DELETE a product (Protected)
-router.delete('/:id', protect, async (req, res) => {
+router.delete('/:id', protect, admin, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ error: 'Product not found' });
