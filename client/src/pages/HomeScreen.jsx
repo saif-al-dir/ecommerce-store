@@ -3,11 +3,26 @@ import { useState, useEffect } from 'react';
 import { Row, Col, Card, Button, Container, Spinner, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import api from '../api/axiosConfig';
+import { useAuth } from '../context/AuthContext';
 
 const HomeScreen = () => {
+  const { user } = useAuth();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [deleteError, setDeleteError] = useState('');
+
+  // Add a delete handler function:
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      try {
+        await api.delete(`/api/products/${id}`);
+        setProducts(products.filter((p) => p._id !== id));
+      } catch (err) {
+        setDeleteError('Failed to delete product.');
+      }
+    }
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -76,9 +91,20 @@ const HomeScreen = () => {
                 <Card.Text className="fs-5 fw-bold text-success mb-3">
                   ${product.price}
                 </Card.Text>
-                <Button as={Link} to={`/product/${product._id}`} variant="primary" className="w-100">
+                <Button as={Link} to={`/product/${product._id}`} variant="primary" className="w-100 mb-2">
                   View Details
                 </Button>
+                {/* Admin CRUD Buttons */}
+                {user && (
+                  <div className="d-flex gap-2">
+                    <Button as={Link} to={`/admin/product/${product._id}/edit`} variant="warning" className="w-100">
+                      Edit
+                    </Button>
+                    <Button variant="danger" className="w-100" onClick={() => handleDelete(product._id)}>
+                      Delete
+                    </Button>
+                  </div>
+                )}
               </div>
             </Card.Body>
           </Card>

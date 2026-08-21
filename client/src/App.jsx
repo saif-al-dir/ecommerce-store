@@ -4,8 +4,10 @@ import { Container } from 'react-bootstrap';
 import HomeScreen from './pages/HomeScreen';
 import ProductScreen from './pages/ProductScreen';
 import CartScreen from './pages/CartScreen';
+import Footer from './components/Footer';
 import { CartProvider } from './context/CartContext';
 import ProductCreateScreen from './pages/ProductCreateScreen';
+import ProductEditScreen from './pages/ProductEditScreen';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import LoginScreen from './pages/LoginScreen';
@@ -24,11 +26,13 @@ const App = () => {
                 <Route path="/" element={<HomeScreen />} />
                 <Route path="/product/:id" element={<ProductScreen />} />
                 <Route path="/admin/create-product" element={<ProductCreateScreen />} />
+                <Route path="/admin/product/:id/edit" element={<ProductEditScreen />} />
                 <Route path="/cart" element={<CartScreen />} />
                 <Route path="/login" element={<LoginScreen />} />
                 <Route path="/register" element={<RegisterScreen />} />
               </Routes>
             </Container>
+            <Footer />
           </div>
         </Router>
       </CartProvider>
