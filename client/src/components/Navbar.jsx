@@ -1,12 +1,13 @@
 // client/src/components/Navbar.jsx
+import React from 'react';
 import { Navbar, Nav, Button, Container } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useCart } from '../context/CartContext'; // <-- Import
+import { useCart } from '../context/CartContext';
 
 const NavigationBar = () => {
   const { user, logout } = useAuth();
-  const { cartItems } = useCart(); // <-- Get cart items
+  const { cartItems } = useCart();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -14,7 +15,6 @@ const NavigationBar = () => {
     navigate('/login');
   };
 
-  // Calculate total items in cart
   const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
 
   return (
@@ -28,7 +28,6 @@ const NavigationBar = () => {
           <Nav className="ms-auto align-items-center">
             <Nav.Link as={Link} to="/" className="text-light">Home</Nav.Link>
             
-            {/* Cart Link with Badge */}
             <Nav.Link as={Link} to="/cart" className="text-light me-3">
               Cart
               {cartCount > 0 && (
@@ -36,16 +35,17 @@ const NavigationBar = () => {
               )}
             </Nav.Link>
 
-            {user?.isAdmin && (
+            {user ? (
               <>
-
-                <Nav.Link as={Link} to="/admin/create-product" className="text-light">
-                  Create Product
-                </Nav.Link>
-                
-                  <Nav.Link as={Link} to="/profile" className="text-warning me-3">
-                    Hello, {user.name}!
+                {user?.isAdmin && (
+                  <Nav.Link as={Link} to="/admin/create-product" className="text-light">
+                    Create Product
                   </Nav.Link>
+                )}
+                
+                <Nav.Link as={Link} to="/profile" className="text-warning ms-3 me-3">
+                  Hello, {user.name}!
+                </Nav.Link>
                 
                 <Button variant="outline-danger" onClick={handleLogout}>
                   Logout
